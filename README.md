@@ -1,3 +1,5 @@
+[![tests](https://github.com/zaz600/suomen-botti/actions/workflows/go-pr-check.yml/badge.svg)](https://github.com/zaz600/suomen-botti/actions/workflows/go-pr-check.yml)
+
 # Suomen Botti
 
 ## Сборка и тестирование
