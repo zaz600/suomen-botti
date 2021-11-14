@@ -1,4 +1,4 @@
-# Suomen Bottii
+# Suomen Botti
 
 ## Сборка и тестирование
 Для работы бота нужен токен от бота, полученный у https://t.me/BotFather
