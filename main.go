@@ -5,19 +5,20 @@ import (
 	"log"
 	"math/rand"
 	"os"
-	"regexp"
 	"strings"
 	"time"
 
+	"github.com/PuerkitoBio/goquery"
 	"github.com/go-resty/resty/v2"
+
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
 var botToken = os.Getenv("SUOMEN_BOTTI_TG_TOKEN")
 
 type SearchItem struct {
-	Name  string
-	Regex *regexp.Regexp
+	Name        string
+	CssSelector string
 }
 
 type SearchResult struct {
@@ -26,14 +27,14 @@ type SearchResult struct {
 }
 
 var cfg = []SearchItem{
-	{Name: "G.yks", Regex: createRegex("y.gen")},
-	{Name: "P.yks", Regex: createRegex("y.part")},
-	{Name: "ILL.yks", Regex: createRegex("y.ill")},
+	{Name: "G.yks", CssSelector: "y.gen"},
+	{Name: "P.yks", CssSelector: "y.part"},
+	{Name: "ILL.yks", CssSelector: "y.ill"},
 
-	{Name: "N.mon", Regex: createRegex("mon.akk")},
-	{Name: "G.mon", Regex: createRegex("mon.gen")},
-	{Name: "P.mon", Regex: createRegex("mon.part")},
-	{Name: "ILL.mon", Regex: createRegex("mon.ill")},
+	{Name: "N.mon", CssSelector: "mon.akk"},
+	{Name: "G.mon", CssSelector: "mon.gen"},
+	{Name: "P.mon", CssSelector: "mon.part"},
+	{Name: "ILL.mon", CssSelector: "mon.ill"},
 }
 
 var quizWords = []string{
@@ -151,15 +152,20 @@ func getTaivutus(word string) ([]SearchResult, error) {
 		return nil, err
 	}
 
+	doc, err := goquery.NewDocumentFromReader(strings.NewReader(resp.String()))
+	if err != nil {
+		return nil, err
+	}
+
 	var result []SearchResult
 
 	for _, searchItem := range cfg {
-		reResult := searchItem.Regex.FindAllStringSubmatch(resp.String(), -1)
+		queryResult := doc.Find(fmt.Sprintf(`span[data-kuvaus*="%s"] a`, searchItem.CssSelector))
 
-		if len(reResult) > 0 && len(reResult[0]) == 2 {
+		if len(queryResult.Nodes) > 0 {
 			result = append(result, SearchResult{
 				Name:  searchItem.Name,
-				Value: reResult[0][1],
+				Value: queryResult.First().Text(),
 			})
 		} else {
 			result = append(result, SearchResult{
@@ -169,10 +175,6 @@ func getTaivutus(word string) ([]SearchResult, error) {
 		}
 	}
 	return result, nil
-}
-
-func createRegex(str string) *regexp.Regexp {
-	return regexp.MustCompile(fmt.Sprintf(`(?ms)<span.*?data-kuvaus=".*?%s.*?".*?>.*?<a.*?>(.+?)</a>`, str))
 }
 
 func processQuizCommand(bot *tgbotapi.BotAPI, message *tgbotapi.Message) {
