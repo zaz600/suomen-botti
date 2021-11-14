@@ -1,6 +1,6 @@
-[![tests](https://github.com/zaz600/suomen-botti/actions/workflows/go-pr-check.yml/badge.svg)](https://github.com/zaz600/suomen-botti/actions/workflows/go-pr-check.yml)
-
 # Suomen Botti
+
+[![tests](https://github.com/zaz600/suomen-botti/actions/workflows/go-pr-check.yml/badge.svg)](https://github.com/zaz600/suomen-botti/actions/workflows/go-pr-check.yml)
 
 ## Сборка и тестирование
 Для работы бота нужен токен от бота, полученный у https://t.me/BotFather
