@@ -110,7 +110,9 @@ func processSearchCmd(bot *tgbotapi.BotAPI, message *tgbotapi.Message) {
 		answer := "Поискать формы слова. Пример:\n/search kerros "
 		msg := tgbotapi.NewMessage(message.Chat.ID, answer)
 		msg.ReplyToMessageID = message.MessageID
-		bot.Send(msg)
+		if _, err := bot.Send(msg); err != nil {
+			log.Println(err)
+		}
 		return
 	}
 
@@ -130,7 +132,9 @@ func processSearchCmd(bot *tgbotapi.BotAPI, message *tgbotapi.Message) {
 	answer.WriteString(fmt.Sprintf("\n📖 https://fi.wiktionary.org/wiki/%s", word))
 	msg := tgbotapi.NewMessage(message.Chat.ID, answer.String())
 	msg.ReplyToMessageID = message.MessageID
-	bot.Send(msg)
+	if _, err := bot.Send(msg); err != nil {
+		log.Println(err)
+	}
 }
 
 func getTaivutus(word string) ([]SearchResult, error) {
@@ -168,19 +172,21 @@ func createRegex(str string) *regexp.Regexp {
 }
 
 func processQuizCommand(bot *tgbotapi.BotAPI, message *tgbotapi.Message) {
-	word := quizWords[rand.Intn(len(quizWords))]
+	word := quizWords[rand.Intn(len(quizWords))] //nolint:gosec
 	items, err := getTaivutus(word)
 	if err != nil {
 		answer := "Не смогли подготовить данные для квиза 😭"
 		msg := tgbotapi.NewMessage(message.Chat.ID, answer)
 		msg.ReplyToMessageID = message.MessageID
-		bot.Send(msg)
+		if _, err := bot.Send(msg); err != nil {
+			log.Println(err)
+		}
 		return
 	}
 
 	rand.Shuffle(len(items), func(i, j int) { items[i], items[j] = items[j], items[i] })
 
-	rightAnswer := rand.Intn(len(items))
+	rightAnswer := rand.Intn(len(items)) //nolint:gosec
 	answers := make([]string, 0, len(items))
 	for _, item := range items {
 		answers = append(answers, item.Value)
@@ -204,7 +210,9 @@ func processQuizCommand(bot *tgbotapi.BotAPI, message *tgbotapi.Message) {
 	}
 	poll.ReplyToMessageID = message.MessageID
 
-	bot.Send(poll)
+	if _, err := bot.Send(poll); err != nil {
+		log.Println(err)
+	}
 }
 
 func main() {
