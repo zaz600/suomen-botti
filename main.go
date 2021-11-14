@@ -105,8 +105,15 @@ var quizWords = []string{
 	"omena",
 }
 
+func isEmptyCommand(message *tgbotapi.Message, botUserName string) bool {
+	text := strings.TrimPrefix(message.Text, fmt.Sprintf("/%s", message.Command()))
+	text = strings.TrimSuffix(text, fmt.Sprintf("@%s", botUserName))
+	text = strings.TrimSpace(text)
+	return text == ""
+}
+
 func processSearchCmd(bot *tgbotapi.BotAPI, message *tgbotapi.Message) {
-	if strings.TrimSuffix(strings.TrimPrefix(message.Text, "/"), "@"+message.From.UserName) == message.Command() {
+	if isEmptyCommand(message, bot.Self.UserName) {
 		answer := "Поискать формы слова. Пример:\n/search kerros "
 		msg := tgbotapi.NewMessage(message.Chat.ID, answer)
 		msg.ReplyToMessageID = message.MessageID
