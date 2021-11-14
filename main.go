@@ -238,7 +238,7 @@ func main() {
 
 	for update := range updates {
 		if update.Message == nil { // ignore any non-Message Updates
-			log.Println(update.CallbackQuery)
+			log.Println(update)
 			continue
 		}
 
