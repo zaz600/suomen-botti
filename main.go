@@ -18,7 +18,7 @@ var botToken = os.Getenv("SUOMEN_BOTTI_TG_TOKEN")
 
 type SearchItem struct {
 	Name        string
-	CssSelector string
+	CSSSelector string
 }
 
 type SearchResult struct {
@@ -27,14 +27,14 @@ type SearchResult struct {
 }
 
 var cfg = []SearchItem{
-	{Name: "G.yks", CssSelector: "y.gen"},
-	{Name: "P.yks", CssSelector: "y.part"},
-	{Name: "ILL.yks", CssSelector: "y.ill"},
+	{Name: "G.yks", CSSSelector: "y.gen"},
+	{Name: "P.yks", CSSSelector: "y.part"},
+	{Name: "ILL.yks", CSSSelector: "y.ill"},
 
-	{Name: "N.mon", CssSelector: "mon.akk"},
-	{Name: "G.mon", CssSelector: "mon.gen"},
-	{Name: "P.mon", CssSelector: "mon.part"},
-	{Name: "ILL.mon", CssSelector: "mon.ill"},
+	{Name: "N.mon", CSSSelector: "mon.akk"},
+	{Name: "G.mon", CSSSelector: "mon.gen"},
+	{Name: "P.mon", CSSSelector: "mon.part"},
+	{Name: "ILL.mon", CSSSelector: "mon.ill"},
 }
 
 var quizWords = []string{
@@ -160,7 +160,7 @@ func getTaivutus(word string) ([]SearchResult, error) {
 	var result []SearchResult
 
 	for _, searchItem := range cfg {
-		queryResult := doc.Find(fmt.Sprintf(`span[data-kuvaus*="%s"] a`, searchItem.CssSelector))
+		queryResult := doc.Find(fmt.Sprintf(`span[data-kuvaus*="%s"] a`, searchItem.CSSSelector))
 
 		if len(queryResult.Nodes) > 0 {
 			result = append(result, SearchResult{
