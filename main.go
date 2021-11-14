@@ -242,7 +242,7 @@ func main() {
 			continue
 		}
 
-		log.Printf("[%s] %s", update.Message.From.UserName, update.Message.Text)
+		log.Printf("user:%d [%s], chatId: %d, %s", update.Message.From.ID, update.Message.From.UserName, update.Message.Chat.ID, update.Message.Text)
 
 		if update.Message.Command() == "search" {
 			processSearchCmd(bot, update.Message)
