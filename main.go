@@ -120,7 +120,7 @@ func processSearchCmd(bot *tgbotapi.BotAPI, message *tgbotapi.Message) {
 		return
 	}
 
-	word := strings.ToLower(strings.TrimPrefix(message.Text, "/search "))
+	word := strings.Fields(strings.ToLower(message.Text))[1]
 
 	answer := strings.Builder{}
 	answer.WriteString(fmt.Sprintf("🔍 %s\n\n", word))
