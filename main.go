@@ -106,6 +106,45 @@ var quizWords = []string{
 	"omena",
 }
 
+var quizRektio = map[string][]string{
+	"Verbi + P": {
+		"etsiä - искать",
+		"häiritä - тревожить",
+		"inhota - призерать",
+		"juhlia - праздновать",
+		"kokeilla - попробовать",
+		"käyda - посещать",
+	},
+
+	"Verbi + sta/stä": {
+		"nauttia - наслаждаться",
+		"olla kiinnostunut - быть заинтересованным",
+		"pitää",
+	},
+
+	"Verbi + lta/ltä": {
+		"haista - вонять",
+		"kuulosta - звучать",
+		"maistua - иметь вкус",
+		"näyttää - выглядеть",
+		"tuntua - чувствуется",
+		"tuoksua - пахнуть",
+		"vaikuttaa - производить впечатление",
+	},
+
+	"Verbi + ILL": {
+		"ihastua - влюбляться",
+		"osallistua - принять участие в чем-то",
+		"rakastua - влюбляться",
+		"tutustua - познакомиться",
+	},
+
+	"Verbi + maan/mään": {
+		"oppia - научиться",
+		"ruveta - приняться за что-то",
+	},
+}
+
 func isEmptyCommand(message *tgbotapi.Message) bool {
 	return message.IsCommand() && len(strings.Fields(message.Text)) == 1
 }
@@ -178,6 +217,47 @@ func getTaivutus(word string) ([]SearchResult, error) {
 }
 
 func processQuizCommand(bot *tgbotapi.BotAPI, message *tgbotapi.Message) {
+	if quizType := rand.Intn(3); quizType == 1 {
+		sendWordTypeQuiz(bot, message)
+	} else {
+		sendRektioQuiz(bot, message)
+	}
+}
+
+func sendRektioQuiz(bot *tgbotapi.BotAPI, message *tgbotapi.Message) {
+	answers := make([]string, 0, len(quizRektio))
+	for k := range quizRektio {
+		answers = append(answers, k)
+	}
+	rand.Shuffle(len(answers), func(i, j int) { answers[i], answers[j] = answers[j], answers[i] })
+
+	rightAnswerIndex := rand.Intn(len(answers)) //nolint:gosec
+	rightAnswer := answers[rightAnswerIndex]
+	guess := quizRektio[rightAnswer][rand.Intn(len(quizRektio[rightAnswer]))] //nolint:gosec
+	poll := tgbotapi.SendPollConfig{
+		BaseChat: tgbotapi.BaseChat{
+			ChatID: message.Chat.ID,
+		},
+		Question:              fmt.Sprintf("Как употребляют глагол '%s' ?", guess),
+		Options:               answers,
+		IsAnonymous:           true,
+		Type:                  "quiz",
+		AllowsMultipleAnswers: false,
+		CorrectOptionID:       int64(rightAnswerIndex),
+		Explanation:           fmt.Sprintf("correct - %s", answers[rightAnswerIndex]),
+		ExplanationParseMode:  "markdown",
+		OpenPeriod:            0,
+		CloseDate:             0,
+		IsClosed:              false,
+	}
+	poll.ReplyToMessageID = message.MessageID
+
+	if _, err := bot.Send(poll); err != nil {
+		log.Println(err)
+	}
+}
+
+func sendWordTypeQuiz(bot *tgbotapi.BotAPI, message *tgbotapi.Message) {
 	word := quizWords[rand.Intn(len(quizWords))] //nolint:gosec
 	items, err := getTaivutus(word)
 	if err != nil {
