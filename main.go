@@ -217,7 +217,7 @@ func getTaivutus(word string) ([]SearchResult, error) {
 }
 
 func processQuizCommand(bot *tgbotapi.BotAPI, message *tgbotapi.Message) {
-	if quizType := rand.Intn(3); quizType == 1 {
+	if quizType := rand.Intn(3); quizType == 1 { //nolint:gosec
 		sendWordTypeQuiz(bot, message)
 	} else {
 		sendRektioQuiz(bot, message)
